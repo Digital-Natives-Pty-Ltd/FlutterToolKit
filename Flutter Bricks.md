@@ -1,214 +1,254 @@
-# **Comprehensive Guide to Setting Up and Using Flutter Bricks**
+# **Comprehensive Guide to Mason and Bricks in Flutter**
 
 ---
 
-## **1. What is Flutter Bricks?**
-Flutter Bricks is a UI library that provides pre-designed and customizable Flutter components to help developers create visually appealing and functional applications quickly. It includes widgets such as buttons, forms, navigation, and more, adhering to modern design principles and enabling consistent development.
+## **1. What is Mason and Bricks?**
+Mason is an open-source Dart package created by Felix Angelov that simplifies project scaffolding by generating files and directories from reusable templates called "bricks." It enhances developer productivity by maintaining consistency in code and reducing repetitive tasks.
+
+Bricks are predefined templates that can include variables and logic for customization, making it easy to generate repetitive structures like widgets, tests, and more.
 
 ---
 
 ## **2. Prerequisites**
 
-### **2.1. Flutter Environment**
-- Ensure Flutter SDK is installed and configured on your system. Refer to the Flutter onboarding documentation for setup instructions.
+### **2.1. Dart and Flutter Environment**
+- Ensure Dart and Flutter are installed and configured on your system. 
+- Validate the installation using:
+  ```bash
+  flutter doctor
+  ```
 
 ### **2.2. IDE Setup**
-- Use a recommended IDE such as **Visual Studio Code** or **Android Studio**.
-- Install the Flutter and Dart extensions or plugins.
+- Recommended IDE: **Visual Studio Code** or **Android Studio**.
+- Install the Flutter and Dart extensions/plugins.
 
-### **2.3. Project Configuration**
-- Ensure your `pubspec.yaml` is ready to manage dependencies and assets.
+### **2.3. Homebrew (Optional)**
+For macOS/Linux users, Homebrew can simplify installation and updates.
+- Install Homebrew from [Homebrew's website](https://brew.sh/).
 
 ---
 
-## **3. Installing Flutter Bricks**
+## **3. Installing Mason**
 
-### **3.1. Adding Flutter Bricks to Your Project**
-1. Add the dependency to your project using the terminal:
+### **3.1. Using Dart CLI**
+Run the following command to globally activate Mason CLI:
+```bash
+dart pub global activate mason_cli
+```
+
+### **3.2. Using Homebrew (macOS/Linux)**
+1. Add the Mason tap:
    ```bash
-   flutter pub add flutter_bricks
+   brew tap felangel/mason
    ```
-2. Alternatively, manually add the package to `pubspec.yaml`:
-   ```yaml
-   dependencies:
-     flutter_bricks: ^latest_version
-   ```
-3. Fetch dependencies:
+2. Install Mason:
    ```bash
-   flutter pub get
+   brew install mason
+   ```
+3. Update Mason when necessary:
+   ```bash
+   brew update && brew upgrade mason
    ```
 
-### **3.2. Import the Library**
-In the Dart file where you intend to use Flutter Bricks, add the import statement:
-```dart
-import 'package:flutter_bricks/flutter_bricks.dart';
+Verify installation using:
+```bash
+mason --version
 ```
 
 ---
 
-## **4. Core Components of Flutter Bricks**
+## **4. Setting Up Mason in a Project**
 
-### **4.1. Categories of Components**
-1. **Buttons**: Multiple styles including elevated, flat, and outline buttons.
-2. **Cards**: Pre-designed and customizable cards for displaying content.
-3. **Forms**: Input fields, dropdowns, and validators.
-4. **Navigation**: App bars, navigation drawers, and bottom navigation bars.
-5. **Typography**: Ready-to-use text styles.
-6. **Custom Widgets**: Extend and modify base templates.
+### **4.1. Initialize Mason**
+Navigate to your project directory and run:
+```bash
+mason init
+```
+This creates a `mason.yaml` file where all bricks are registered.
 
-### **4.2. Usage Examples**
-#### **Buttons**
-```dart
-BricksButton(
-  text: "Submit",
-  onPressed: () => print("Button Pressed"),
-  color: Colors.green,
-)
+### **4.2. Adding a Brick**
+To add a local brick:
+```yaml
+bricks:
+  widget:
+    path: ./widget/
 ```
 
-#### **Cards**
-```dart
-BricksCard(
-  title: "Hello Flutter",
-  subtitle: "Welcome to Flutter Bricks",
-  content: Text("Create amazing apps effortlessly!"),
-  onTap: () => print("Card Tapped"),
-)
+To add a remote brick from GitHub:
+```yaml
+bricks:
+  greeting:
+    git:
+      url: https://github.com/felangel/mason.git
+      path: bricks/greeting
 ```
 
-#### **Forms**
-```dart
-BricksTextField(
-  labelText: "Username",
-  hintText: "Enter your username",
-  validator: (value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter a username.";
-    }
-    return null;
-  },
-)
-```
-
-#### **Navigation**
-```dart
-BricksAppBar(
-  title: Text("Home Page"),
-)
+Fetch registered bricks using:
+```bash
+mason get
 ```
 
 ---
 
-## **5. Advanced Customization**
+## **5. Creating a Custom Brick**
 
-### **5.1. Global Theme Integration**
-Integrate Flutter Bricks with your app’s theme to ensure consistent styling across components:
-```dart
-ThemeData theme = ThemeData(
-  primarySwatch: Colors.teal,
-  textTheme: TextTheme(
-    bodyText1: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-  ),
-);
-
-MaterialApp(
-  theme: theme,
-  home: MyHomePage(),
-);
+### **5.1. Create a New Brick**
+Run the following command:
+```bash
+mason new widget
+```
+This creates a directory structure:
+```text
+.
+├── mason-lock.json
+├── mason.yaml
+└── widget
+    ├── __brick__
+    │   └── HELLO.md
+    ├── brick.yaml
+    ├── CHANGELOG.md
+    ├── LICENSE
+    └── README.md
 ```
 
-### **5.2. Component-Level Customization**
-Override specific properties to customize individual widgets:
-```dart
-BricksButton(
-  text: "Custom Styled Button",
-  onPressed: () {},
-  color: Colors.orange,
-  borderRadius: 12.0,
-  elevation: 5,
-)
+### **5.2. Define Variables**
+Edit `brick.yaml` to define variables for your brick:
+```yaml
+vars:
+  name:
+    type: string
+    description: The widget name
+    default: MyWidget
+  isStateless:
+    type: boolean
+    description: Stateless or Stateful widget
+    default: true
 ```
 
-### **5.3. Customizing Cards**
+### **5.3. Add Template Files**
+Replace the default `HELLO.md` with a Dart file inside `__brick__`:
+```text
+__brick__/
+  {{name.snakeCase()}}.dart
+```
+
+### **5.4. Write the Template**
+Use Mustache syntax for dynamic content in your template:
 ```dart
-BricksCard(
-  title: "Custom Card",
-  subtitle: "With a unique style",
-  backgroundColor: Colors.blueGrey,
-  content: Column(
-    children: [
-      Icon(Icons.star, color: Colors.yellow),
-      Text("Customizable Content"),
-    ],
-  ),
-)
+import 'package:flutter/material.dart';
+
+{{#isStateless}}
+class {{name.pascalCase()}} extends StatelessWidget {
+  const {{name.pascalCase()}}({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("{{name}}")),
+    );
+  }
+}
+{{/isStateless}}
+{{^isStateless}}
+class {{name.pascalCase()}} extends StatefulWidget {
+  const {{name.pascalCase()}}({Key? key}) : super(key: key);
+
+  @override
+  State<{{name.pascalCase()}}> createState() => _{{name.pascalCase()}}State();
+}
+
+class _{{name.pascalCase()}}State extends State<{{name.pascalCase()}}>{
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("{{name}}")),
+    );
+  }
+}
+{{/isStateless}}
 ```
 
 ---
 
-## **6. Best Practices for Using Flutter Bricks**
+## **6. Using a Brick**
 
-1. **Consistency**: Use global themes to ensure uniform styling across all components.
-2. **Reusability**: Modularize common widgets into reusable components.
-3. **Accessibility**: Ensure components are accessible, including proper contrast and labels.
-4. **Documentation**: Maintain internal documentation for any customizations or extensions.
-5. **Testing**: Validate the responsiveness and functionality of components on various devices.
+### **6.1. List Bricks**
+To see available bricks:
+```bash
+mason list
+```
+
+### **6.2. Generate Files**
+Generate files using the `make` command:
+```bash
+mason make widget
+```
+Provide values for the variables when prompted or pass them as arguments:
+```bash
+mason make widget -o ./lib/widgets --name HomePage --isStateless true
+```
 
 ---
 
-## **7. Troubleshooting Common Issues**
+## **7. Using Remote Bricks**
 
-### **7.1. Package Installation Errors**
-- **Problem**: Dependency not found.
-- **Solution**: Ensure you’ve added `flutter_bricks` to `pubspec.yaml` and run:
+### **7.1. BrickHub.dev**
+Search for bricks:
+```bash
+mason search <query>
+```
+Example:
+```bash
+mason search state
+```
+Install a brick:
+```bash
+mason add bloc
+```
+
+### **7.2. Remove a Brick**
+To remove an unused brick:
+```bash
+mason remove <brickname>
+```
+
+---
+
+## **8. Best Practices**
+
+1. **Consistency**: Use bricks to standardize repetitive code across projects.
+2. **Reusability**: Create modular and reusable templates.
+3. **Documentation**: Document brick usage and variables for team reference.
+4. **Validation**: Use conditional logic to validate inputs and ensure correct file generation.
+5. **Version Control**: Maintain and version your bricks for backward compatibility.
+
+---
+
+## **9. Troubleshooting Common Issues**
+
+### **9.1. Brick Not Found**
+- **Problem**: Mason cannot locate a brick.
+- **Solution**: Ensure the brick is registered in `mason.yaml` and run:
   ```bash
-  flutter pub get
+  mason get
   ```
 
-### **7.2. Theme Issues**
-- **Problem**: Components don’t follow the global theme.
-- **Solution**: Confirm your `ThemeData` is correctly defined and applied in the `MaterialApp`.
+### **9.2. Variable Errors**
+- **Problem**: Missing or invalid variable input.
+- **Solution**: Validate the variable types and provide defaults in `brick.yaml`.
 
-### **7.3. Widget Crashes**
-- **Problem**: Missing required fields in a component.
-- **Solution**: Refer to the official Flutter Bricks documentation to ensure all mandatory parameters are provided.
+### **9.3. Directory Issues**
+- **Problem**: Files generated in the wrong location.
+- **Solution**: Use the `-o` flag to specify the output directory.
 
 ---
 
-## **8. Additional Features of Flutter Bricks**
+## **10. Resources**
 
-### **8.1. Animations**
-- Many components support built-in animations.
-- Example:
-  ```dart
-  BricksButton(
-    text: "Animated Button",
-    onPressed: () {},
-    animate: true,
-  )
-  ```
-
-### **8.2. Localization Support**
-- Components can be adapted for multiple languages using Flutter’s `intl` package.
-
-### **8.3. Custom Assets**
-- Integrate images, icons, or custom assets seamlessly within cards or navigation.
-- Example:
-  ```dart
-  BricksCard(
-    title: "Custom Image",
-    content: Image.asset("assets/my_image.png"),
-  )
-  ```
+- [Mason CLI Documentation](https://pub.dev/packages/mason_cli)
+- [BrickHub.dev](https://brickhub.dev)
+- [Mustache Syntax Guide](https://mustache.github.io/mustache.5.html)
 
 ---
 
-## **9. Resources and Documentation**
-
-- [Flutter Bricks Documentation](https://flutterbricks.dev/docs)
-- [Official Flutter Documentation](https://flutter.dev/docs)
-- [Dart Packages](https://pub.dev)
-
----
-
-This expanded document ensures a detailed understanding of Flutter Bricks, covering its features, setup, customization, and troubleshooting. For further exploration, consult the official documentation or contact the team.
+This document now provides a detailed guide to using Mason and Bricks in Flutter, covering installation, setup, customization, and best practices. Expand further based on specific project needs!
